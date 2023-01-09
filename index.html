@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Weather" />
+    <link rel="apple-touch-icon" href="/icon192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>mwthr</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script id="data" type="application/json">
+      {
+        "base": {
+          "url": "https://api.wikiocity.com/r/raster/en/{z}/{x}/{y}.png?key=d4961a90a88ac8977c687c2bd",
+          "attribution": "\u00a9 \u003ca href=\u0022https://api.wikiocity.com\u0022\u003eWikiocity\u003c/a\u003e \u00a9 \u003ca href=\u0022https://www.openstreetmap.org/copyright\u0022\u003eOpenStreetMap contributors\u003ca\u003e"
+        },
+        "radar": {
+          "url": "https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows",
+          "params": {
+            "layers": "conus_bref_qcd",
+            "format": "image/png",
+            "transparent": true,
+            "uppercase": true
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
