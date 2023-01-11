@@ -1,6 +1,11 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import axiosRetry from 'axios-retry';
-import { useQueries, useQuery } from '@tanstack/react-query';
+import {
+  useIsFetching,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import type {
   CityState,
@@ -52,6 +57,8 @@ export function useHourlyForecast(point?: GridPoint) {
   return useQuery(getOptions<Forecast>(url));
 }
 
+export { useIsFetching };
+
 export function useObservations(ids?: string[]) {
   return useQueries({
     queries: (ids ?? []).map(id => {
@@ -59,6 +66,14 @@ export function useObservations(ids?: string[]) {
       return getOptions<Observation>(url, { validateStatus: () => true });
     }),
   });
+}
+
+export function useRefresh() {
+  const client = useQueryClient();
+
+  return () => {
+    client.resetQueries();
+  };
 }
 
 export function useStations(point?: GridPoint) {

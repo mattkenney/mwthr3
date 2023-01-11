@@ -1,5 +1,5 @@
-mwthr3
-=====
+# mwthr3
+
 The code behind [mwthr.com](http://mwthr.com).
 
 ## License
@@ -20,5 +20,7 @@ The code behind [mwthr.com](http://mwthr.com).
     along with Mwthr3.  If not, see <http://www.gnu.org/licenses/>.
 
 ## Previous versions
+
 2013-2023: https://github.com/mattkenney/rwthr
+
 2011-2013: https://github.com/mattkenney/mwthr

@@ -7,7 +7,22 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 
 import { useForecast } from '../hooks/nws';
-import type { GridPoint } from '../types/nws';
+import type { GridPoint, Period } from '../types/nws';
+
+function formatDate(str: string) {
+  return new Date(str).toLocaleString(undefined, {
+    month: 'numeric',
+    day: 'numeric',
+  });
+}
+
+function formatName(row: Period) {
+  if (row.isDaytime) {
+    const when = formatDate(row.startTime);
+    return `${row.name} ${when}`;
+  }
+  return row.name;
+}
 
 interface ForecastProps {
   gridPoint?: GridPoint;
@@ -17,12 +32,14 @@ export function Forecast({ gridPoint }: ForecastProps) {
   const result = useForecast(gridPoint);
   const periods = result.data?.properties?.periods;
 
+  if (!periods) return null;
+
   return (
     <>
       <Divider />
       <Table>
         <TableBody>
-          {(periods ?? []).map(row => (
+          {periods.map(row => (
             <TableRow
               key={row.startTime}
               selected={!row.isDaytime}
@@ -30,7 +47,7 @@ export function Forecast({ gridPoint }: ForecastProps) {
             >
               <TableCell>
                 <Box sx={{ fontWeight: '500' }}>
-                  {row.name}:
+                  {formatName(row)}:
                   <Typography
                     component="span"
                     sx={{
