@@ -5,10 +5,47 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 type Row = [string, number, number];
+
+const fallback = '40.6509,-74.0113';
+
+let count = 0;
+
+function makeError(
+  currentCount: number,
+  setLocating: (flag: boolean) => void,
+  setWhere?: (where: string) => void
+) {
+  return (positionError: GeolocationPositionError) => {
+    console.error({ count, currentCount, positionError });
+    if (currentCount !== count) return;
+
+    setLocating(false);
+    setWhere && setWhere(fallback);
+  };
+}
+
+function makeSuccess(
+  currentCount: number,
+  setLocating: (flag: boolean) => void,
+  setWhere?: (where: string) => void
+) {
+  return (position: GeolocationPosition) => {
+    console.log({ count, currentCount, position });
+    if (currentCount !== count) return;
+
+    const coords =
+      position?.coords &&
+      [position.coords.latitude, position.coords.longitude].join();
+    if (coords && setWhere) {
+      setWhere(coords);
+    }
+    setLocating(false);
+  };
+}
 
 interface WhereProps {
   open?: boolean;
@@ -17,6 +54,23 @@ interface WhereProps {
 }
 
 export function Where({ open, setOpen, setWhere }: WhereProps) {
+  const [isLocating, setLocating] = useState(true);
+
+  const getWhere = () => {
+    if (navigator.geolocation) {
+      count++;
+      navigator.geolocation.getCurrentPosition(
+        makeSuccess(count, setLocating, setWhere),
+        makeError(count, setLocating, setWhere)
+      );
+    } else {
+      setLocating(false);
+      setWhere && setWhere(fallback);
+    }
+  };
+
+  useEffect(getWhere, []);
+
   const [value, setValue] = useState('');
   const url = /^[a-z]/i.test(value)
     ? `/data/${value[0].toLowerCase()}.json`
@@ -44,6 +98,8 @@ export function Where({ open, setOpen, setWhere }: WhereProps) {
     setValue('');
     setWhere && setWhere('');
     setOpen && setOpen(false);
+    setLocating(true);
+    getWhere();
   };
 
   const handleOK = () => {
@@ -53,40 +109,55 @@ export function Where({ open, setOpen, setWhere }: WhereProps) {
       ?.slice(1)
       .join();
     setValue('');
-    setWhere && setWhere(where ?? '');
+    setWhere && setWhere(where ?? fallback);
     setOpen && setOpen(false);
   };
 
+  const handleStop = () => {
+    // increment the count to cancel pending callbacks
+    count++;
+    setWhere && setWhere(fallback);
+    setLocating(false);
+  };
+
   return (
-    <Dialog open={!!open} onClose={handleCancel}>
-      <DialogTitle>Location Search</DialogTitle>
-      <DialogContent>
-        <Autocomplete
-          noOptionsText="No search results"
-          onChange={(_evt, v) => setValue(v ?? '')}
-          options={options}
-          sx={{ width: 275 }}
-          renderInput={params => (
-            <TextField
-              autoFocus
-              margin="dense"
-              label="City"
-              onChange={evt => setValue(evt.target.value)}
-              type="email"
-              value={value}
-              variant="standard"
-              {...params}
-            />
-          )}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClear}>Use current location</Button>
-      </DialogActions>
-      <DialogActions>
-        <Button onClick={handleCancel}>Cancel</Button>
-        <Button onClick={handleOK}>OK</Button>
-      </DialogActions>
-    </Dialog>
+    <>
+      <Dialog open={isLocating} onClose={handleStop}>
+        <DialogTitle>Finding your location...</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleStop}>Stop</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={!!open} onClose={handleCancel}>
+        <DialogTitle>Location Search</DialogTitle>
+        <DialogContent>
+          <Autocomplete
+            noOptionsText="No search results"
+            onChange={(_evt, v) => setValue(v ?? '')}
+            options={options}
+            sx={{ width: 275 }}
+            renderInput={params => (
+              <TextField
+                autoFocus
+                margin="dense"
+                label="City"
+                onChange={evt => setValue(evt.target.value)}
+                type="email"
+                value={value}
+                variant="standard"
+                {...params}
+              />
+            )}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClear}>Use current location</Button>
+        </DialogActions>
+        <DialogActions>
+          <Button onClick={handleCancel}>Cancel</Button>
+          <Button onClick={handleOK}>OK</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
