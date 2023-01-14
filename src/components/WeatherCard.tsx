@@ -24,7 +24,7 @@ export function WeatherCard({
 
   return (
     <Card>
-      <CardContent sx={{ minHeight: 64 }}>
+      <CardContent>
         {isLoading && (
           <Box sx={{ height: 0, textAlign: 'center' }}>
             <CircularProgress size="1.6em" />

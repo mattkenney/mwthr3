@@ -16,12 +16,16 @@ interface SummaryProps {
 
 export function Summary({ chooseWhere, gridPoint }: SummaryProps) {
   const { city, state } = getCityState(gridPoint);
-  const direction = useMediaQuery('(min-width:460px)') ? 'row' : 'column';
+  const isWide = useMediaQuery('(min-width:460px)');
   const temp = useTemperature(gridPoint);
   const refresh = useRefresh();
 
   return (
-    <Stack direction={direction} spacing={1}>
+    <Stack
+      direction={isWide ? 'row' : 'column'}
+      spacing={1}
+      sx={{ minHeight: isWide ? 32 : 72 }}
+    >
       {city && state && (
         <Box>
           <Chip
