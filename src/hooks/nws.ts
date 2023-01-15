@@ -1,5 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import axiosRetry from 'axios-retry';
+import axiosRetry, {
+  exponentialDelay as retryDelay,
+  isNetworkError,
+  isRetryableError,
+} from 'axios-retry';
 import {
   useIsFetching,
   useQueries,
@@ -20,7 +24,8 @@ const client = axios.create({ timeout: 6000 });
 
 axiosRetry(client, {
   retries: 8,
-  retryDelay: axiosRetry.exponentialDelay,
+  retryCondition: err => isNetworkError(err) || isRetryableError(err),
+  retryDelay,
 });
 
 export function getCityState(point?: GridPoint): Partial<CityState> {
@@ -39,6 +44,7 @@ function getOptions<T>(url?: string, config?: AxiosRequestConfig) {
       const res = await client.get<T>(url ?? '', config);
       return res.data;
     },
+    retry: false, // using axios-retry instead
   };
 }
 

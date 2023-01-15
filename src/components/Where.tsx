@@ -5,32 +5,35 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Snackbar from '@mui/material/Snackbar';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 type Row = [string, number, number];
 
-const fallback = '40.6509,-74.0113';
+export const fallback = '40.6509,-74.0113';
 
 let count = 0;
 
 function makeError(
   currentCount: number,
-  setLocating: (flag: boolean) => void,
+  setIsError: (flag: boolean) => void,
+  setIsLocating: (flag: boolean) => void,
   setWhere?: (where: string) => void
 ) {
   return (positionError: GeolocationPositionError) => {
     console.error({ count, currentCount, positionError });
     if (currentCount !== count) return;
 
-    setLocating(false);
+    setIsError(true);
+    setIsLocating(false);
     setWhere && setWhere(fallback);
   };
 }
 
 function makeSuccess(
   currentCount: number,
-  setLocating: (flag: boolean) => void,
+  setIsLocating: (flag: boolean) => void,
   setWhere?: (where: string) => void
 ) {
   return (position: GeolocationPosition) => {
@@ -43,7 +46,7 @@ function makeSuccess(
     if (coords && setWhere) {
       setWhere(coords);
     }
-    setLocating(false);
+    setIsLocating(false);
   };
 }
 
@@ -54,17 +57,18 @@ interface WhereProps {
 }
 
 export function Where({ open, setOpen, setWhere }: WhereProps) {
-  const [isLocating, setLocating] = useState(true);
+  const [isLocating, setIsLocating] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   const getWhere = () => {
     if (navigator.geolocation) {
       count++;
       navigator.geolocation.getCurrentPosition(
-        makeSuccess(count, setLocating, setWhere),
-        makeError(count, setLocating, setWhere)
+        makeSuccess(count, setIsLocating, setWhere),
+        makeError(count, setIsError, setIsLocating, setWhere)
       );
     } else {
-      setLocating(false);
+      setIsLocating(false);
       setWhere && setWhere(fallback);
     }
   };
@@ -91,6 +95,8 @@ export function Where({ open, setOpen, setWhere }: WhereProps) {
 
   const handleCancel = () => {
     setValue('');
+    setIsError(false);
+    setIsLocating(false);
     setOpen && setOpen(false);
   };
 
@@ -98,7 +104,8 @@ export function Where({ open, setOpen, setWhere }: WhereProps) {
     setValue('');
     setWhere && setWhere('');
     setOpen && setOpen(false);
-    setLocating(true);
+    setIsError(false);
+    setIsLocating(true);
     getWhere();
   };
 
@@ -117,7 +124,7 @@ export function Where({ open, setOpen, setWhere }: WhereProps) {
     // increment the count to cancel pending callbacks
     count++;
     setWhere && setWhere(fallback);
-    setLocating(false);
+    setIsLocating(false);
   };
 
   return (
@@ -158,6 +165,13 @@ export function Where({ open, setOpen, setWhere }: WhereProps) {
           <Button onClick={handleOK}>OK</Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        key="location"
+        anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+        message={'Couldn\u2019t find your location'}
+        onClose={() => setIsError(false)}
+        open={isError}
+      />
     </>
   );
 }

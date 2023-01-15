@@ -6,7 +6,7 @@ import { Radar } from './Radar';
 import { Tropics } from './Tropics';
 import { WeatherCard } from './WeatherCard';
 import { getCoordinates } from '../hooks/nws';
-import { useGridPoint } from '../hooks/nws';
+import type { GridPoint } from '../types/nws';
 
 const tabs = [
   { label: 'Radar', to: 'radar' },
@@ -17,12 +17,10 @@ const tabs = [
 
 interface AppRoutesProps {
   chooseWhere?: () => void;
-  where?: string;
+  gridPoint?: GridPoint;
 }
 
-export function AppRoutes({ chooseWhere, where }: AppRoutesProps) {
-  const result = useGridPoint(where);
-  const gridPoint = result.data;
+export function AppRoutes({ chooseWhere, gridPoint }: AppRoutesProps) {
   const [longitude, latitude] = getCoordinates(gridPoint) ?? [];
 
   return (
