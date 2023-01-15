@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, WMSTileLayer, useMap } from 'react-leaflet';
 import { WMSParams } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
+import { SetBooleanFn, Spinner } from './Spinner';
 
 interface Config {
   base: {
@@ -36,7 +38,10 @@ interface RadarProps {
 }
 
 export function Radar({ latitude, longitude }: RadarProps) {
+  const spinnerRef = useRef<SetBooleanFn>();
+
   if (!latitude || !longitude) return null;
+
   const height = 'max(400px, min(60vh, 1152px))';
   return (
     <MapContainer
@@ -47,7 +52,15 @@ export function Radar({ latitude, longitude }: RadarProps) {
     >
       <Panner latitude={latitude} longitude={longitude} />
       <TileLayer attribution={base.attribution} url={base.url} />
-      <WMSTileLayer url={radar.url} params={radar.params} />
+      <WMSTileLayer
+        eventHandlers={{
+          load: () => spinnerRef.current && spinnerRef.current(false),
+          loading: () => spinnerRef.current && spinnerRef.current(true),
+        }}
+        params={radar.params}
+        url={radar.url}
+      />
+      <Spinner spinnerRef={spinnerRef} />
     </MapContainer>
   );
 }
