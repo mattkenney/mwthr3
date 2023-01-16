@@ -19,6 +19,9 @@ interface Config {
 const dataElement = document.getElementById('data') as HTMLElement;
 const { base, radar } = JSON.parse(dataElement.innerText) as Config;
 
+// two minute cache interval
+const interval = () => Math.round(Date.now() / (2 * 60 * 1000));
+
 function Panner({ latitude, longitude }: RadarProps) {
   const map = useMap();
   const coords = [latitude, longitude].join();
@@ -39,11 +42,11 @@ interface RadarProps {
 
 export function Radar({ latitude, longitude }: RadarProps) {
   const spinnerRef = useRef<SetBooleanFn>();
-  const [timestamp, setTimestamp] = useState(Date.now());
+  const [timestamp, setTimestamp] = useState(interval());
 
   const handler = () => {
     if (document.visibilityState === 'visible') {
-      setTimestamp(Date.now());
+      setTimestamp(interval());
       spinnerRef.current && spinnerRef.current(true);
     }
   };
