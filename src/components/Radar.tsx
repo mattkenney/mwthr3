@@ -39,10 +39,28 @@ interface RadarProps {
 
 export function Radar({ latitude, longitude }: RadarProps) {
   const spinnerRef = useRef<SetBooleanFn>();
+  const [timestamp, setTimestamp] = useState(Date.now());
+
+  const handler = () => {
+    if (document.visibilityState === 'visible') {
+      setTimestamp(Date.now());
+      spinnerRef.current && spinnerRef.current(true);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('focus', handler, false);
+    window.addEventListener('visibilitychange', handler, false);
+    return () => {
+      window.removeEventListener('focus', handler);
+      window.removeEventListener('visibilitychange', handler);
+    };
+  }, [handler]);
 
   if (!latitude || !longitude) return null;
 
   const height = 'max(400px, min(60vh, 1152px))';
+  const params = { ...radar.params, _: timestamp } as WMSParams;
   return (
     <MapContainer
       center={[latitude, longitude]}
@@ -57,7 +75,8 @@ export function Radar({ latitude, longitude }: RadarProps) {
           load: () => spinnerRef.current && spinnerRef.current(false),
           loading: () => spinnerRef.current && spinnerRef.current(true),
         }}
-        params={radar.params}
+        opacity={0.7}
+        params={params}
         url={radar.url}
       />
       <Spinner spinnerRef={spinnerRef} />
