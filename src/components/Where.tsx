@@ -5,6 +5,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
 import Snackbar from '@mui/material/Snackbar';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -132,7 +133,7 @@ export function Where({ open, setOpen, setWhere }: WhereProps) {
       <Dialog open={isLocating} onClose={handleStop}>
         <DialogTitle>Finding your location...</DialogTitle>
         <DialogActions>
-          <Button onClick={handleStop}>Stop</Button>
+          <Button onClick={handleStop}>Cancel</Button>
         </DialogActions>
       </Dialog>
       <Dialog open={!!open} onClose={handleCancel}>
@@ -158,11 +159,12 @@ export function Where({ open, setOpen, setWhere }: WhereProps) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClear}>Use current location</Button>
-        </DialogActions>
-        <DialogActions>
           <Button onClick={handleCancel}>Cancel</Button>
           <Button onClick={handleOK}>OK</Button>
+        </DialogActions>
+        <Divider />
+        <DialogActions>
+          <Button onClick={handleClear}>Use current location</Button>
         </DialogActions>
       </Dialog>
       <Snackbar
