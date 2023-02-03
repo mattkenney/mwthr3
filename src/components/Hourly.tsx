@@ -1,4 +1,5 @@
 import CloseIcon from '@mui/icons-material/Close';
+import Box from '@mui/material/Box';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -61,7 +62,7 @@ export function Hourly({ gridPoint, period, onClose, open }: HourlyProps) {
         </Stack>
       </DialogTitle>
       <DialogContent>
-        <Table>
+        <Table size="small">
           <TableBody>
             {range.map(row => (
               <TableRow>
@@ -81,7 +82,10 @@ export function Hourly({ gridPoint, period, onClose, open }: HourlyProps) {
                     {`\u00B0F`}
                   </Typography>
                 </TableCell>
-                <TableCell>{row.shortForecast}</TableCell>
+                <TableCell>
+                  <Box>{row.shortForecast}</Box>
+                  <Box>{`Wind: ${row.windSpeed} ${row.windDirection}`}</Box>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -41,6 +41,8 @@ export interface Period {
   shortForecast: string;
   startTime: string;
   temperature: number;
+  windDirection: string;
+  windSpeed: string;
 }
 
 export interface Station {

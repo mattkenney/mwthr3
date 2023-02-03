@@ -8,7 +8,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useForecast } from '../hooks/nws';
 import type { GridPoint, Period } from '../types/nws';
@@ -34,24 +34,21 @@ interface ForecastProps {
 }
 
 export function Forecast({ gridPoint }: ForecastProps) {
-  const [hourlyPeriod, setHourlyPeriod] = useState(
-    undefined as Period | undefined
-  );
+  const location = useLocation();
+  const navigate = useNavigate();
   const result = useForecast(gridPoint);
   const periods = result.data?.properties?.periods;
+  const n = Number(location.hash.substring(1));
+  const hourlyPeriod = periods?.[n - 1];
 
   if (!periods) return null;
-
-  const makeOnClick = (row: Period) => {
-    return () => setHourlyPeriod(row);
-  };
 
   return (
     <>
       <Divider />
       <Table>
         <TableBody>
-          {periods.map(row => (
+          {periods.map((row, n, rows) => (
             <TableRow
               key={row.startTime}
               selected={!row.isDaytime}
@@ -86,12 +83,14 @@ export function Forecast({ gridPoint }: ForecastProps) {
                   </Box>
                   <Box>
                     {row.detailedForecast}
-                    <IconButton
-                      onClick={makeOnClick(row)}
-                      sx={{ float: 'right' }}
-                    >
-                      <Schedule />
-                    </IconButton>
+                    {n + 1 < rows.length && (
+                      <IconButton
+                        onClick={() => navigate(`#${n + 1}`)}
+                        sx={{ float: 'right' }}
+                      >
+                        <Schedule />
+                      </IconButton>
+                    )}
                   </Box>
                 </Stack>
               </TableCell>
@@ -102,7 +101,7 @@ export function Forecast({ gridPoint }: ForecastProps) {
       {hourlyPeriod && (
         <Hourly
           gridPoint={gridPoint}
-          onClose={() => setHourlyPeriod(undefined)}
+          onClose={() => navigate('#')}
           open={true}
           period={hourlyPeriod}
         />
