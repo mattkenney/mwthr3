@@ -76,7 +76,7 @@ export function Hourly({ gridPoint, period, onClose, open }: HourlyProps) {
                     sx={{
                       display: 'inline-block',
                       fontSize: '95%',
-                      padding: '0 0.8ex 0 0.2ex',
+                      paddingLeft: '0.2ex',
                     }}
                   >
                     {`\u00B0F`}
@@ -84,7 +84,29 @@ export function Hourly({ gridPoint, period, onClose, open }: HourlyProps) {
                 </TableCell>
                 <TableCell>
                   <Box>{row.shortForecast}</Box>
-                  <Box>{`Wind: ${row.windSpeed} ${row.windDirection}`}</Box>
+                  <Box>
+                    <Typography
+                      component="span"
+                      sx={{
+                        display: 'inline-block',
+                        fontSize: '95%',
+                        paddingRight: '0.6ex',
+                      }}
+                    >
+                      Wind:
+                    </Typography>
+                    {`${row.windDirection} ${row.windSpeed.split(' ')[0]}`}
+                    <Typography
+                      component="span"
+                      sx={{
+                        display: 'inline-block',
+                        fontSize: '95%',
+                        paddingLeft: '0.6ex',
+                      }}
+                    >
+                      mph
+                    </Typography>
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
