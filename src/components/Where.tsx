@@ -77,7 +77,7 @@ export function Where({ open, setOpen, setWhere }: WhereProps) {
   useEffect(getWhere, []);
 
   const [value, setValue] = useState('');
-  const url = /^[a-z]/i.test(value)
+  const url = /^[0-9a-z]/i.test(value)
     ? `/data/${value[0].toLowerCase()}.json`
     : undefined;
   const result = useQuery({
