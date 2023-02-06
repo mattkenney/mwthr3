@@ -15,15 +15,16 @@ const feeds = [
 ];
 
 /*
- * Given a shapefile-to-GeoJSON-Feature source,
+ * Given a [kind, shapefile-to-GeoJSON-Feature source] pair,
  * returns an array of features
  */
-async function getFeatures(source) {
+async function getFeatures([kind, source]) {
   const features = [];
 
   while (true) {
     const result = await source.read();
     if (result.done) break;
+    result.value.properties.kind = kind;
     features.push(result.value);
   }
 
@@ -32,7 +33,7 @@ async function getFeatures(source) {
 
 /*
  * Given a URL of a zipfile of shapefiles,
- * returns an array of shapefile-to-GeoJSON-Feature sources
+ * returns an array of [kind, shapefile-to-GeoJSON-Feature source] pairs
  */
 async function getFeatureSources(link) {
   const res = await fetch(link);
@@ -45,13 +46,16 @@ async function getFeatureSources(link) {
 
   const promises = [];
   archive.forEach((relativePath, file) => {
-    if (/\.shp$/.test(relativePath)) {
+    const match = /_(lin|pgn|pts|wwlin)\.shp$/.exec(relativePath);
+    if (match) {
+      const dbfPath = `${relativePath.slice(0, -4)}.dbf`;
+      const kind = match[1];
       promises.push(
         (async () => {
-          const dbfPath = relativePath.replace(/\.shp$/, '.dbf');
           const shp = await file.async('uint8array');
           const dbf = await archive.file(dbfPath)?.async('uint8array');
-          return shapefile.open(shp, dbf);
+          const source = await shapefile.open(shp, dbf);
+          return [kind, source];
         })()
       );
     }

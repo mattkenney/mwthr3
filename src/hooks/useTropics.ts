@@ -14,7 +14,6 @@ export function useTropics() {
       } catch (err: unknown) {
         console.log({ err });
       }
-      return { features: [], type: 'FeatureCollection' };
     },
   });
 }

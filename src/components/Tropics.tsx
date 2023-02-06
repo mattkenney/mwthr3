@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import {
-  GeoJSON,
   MapContainer,
   Marker,
   TileLayer,
@@ -11,6 +10,7 @@ import 'leaflet/dist/leaflet.css';
 import { useResizeDetector } from 'react-resize-detector';
 
 import { useTropics } from '../hooks/useTropics';
+import { CycloneLayer } from './CycloneLayer';
 
 interface Config {
   base: {
@@ -79,7 +79,7 @@ export function Tropics({ pacific }: TropicsProps) {
               </Tooltip>
             </Marker>
           )}
-          <GeoJSON data={tropics.data} />
+          <CycloneLayer data={tropics.data} />
         </MapContainer>
       )}
     </div>
