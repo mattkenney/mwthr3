@@ -79,8 +79,7 @@ async function processFeeds(...feeds) {
   const sources = (await Promise.all(links.map(getFeatureSources))).flat();
   const features = (await Promise.all(sources.map(getFeatures))).flat();
 
-  return JSON.stringify({ features, type: 'GeometryCollection' });
+  return JSON.stringify({ features, type: 'FeatureCollection' });
 }
 
 processFeeds(...feeds).then(console.log);
-//processFeeds(...feeds).then(x=>console.log(x?.length));
