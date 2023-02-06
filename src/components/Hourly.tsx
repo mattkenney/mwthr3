@@ -65,7 +65,7 @@ export function Hourly({ gridPoint, period, onClose, open }: HourlyProps) {
         <Table size="small">
           <TableBody>
             {range.map(row => (
-              <TableRow>
+              <TableRow key={row.startTime}>
                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
                   {formatTime(row.startTime)}
                 </TableCell>

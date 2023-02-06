@@ -38,7 +38,6 @@ function makeSuccess(
   setWhere?: (where: string) => void
 ) {
   return (position: GeolocationPosition) => {
-    console.log({ count, currentCount, position });
     if (currentCount !== count) return;
 
     const coords =
