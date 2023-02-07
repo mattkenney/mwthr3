@@ -15,16 +15,41 @@ const feeds = [
 ];
 
 /*
- * Given a [kind, shapefile-to-GeoJSON-Feature source] pair,
+ * Add `label` property to one storm path point per storm
+ */
+function addLabels(features) {
+  const filenames = new Set();
+  features
+    .filter(feature => /_pts$/.test(feature.properties.filename))
+    .forEach(feature => {
+      if (filenames.has(feature.properties.filename)) return;
+      filenames.add(feature.properties.filename);
+      const sameName = features.filter(
+        other => other.properties.filename === feature.properties.filename
+      );
+      let other = sameName.find(other =>
+        /(^TS)|(^Tropical Storm)|(^HU)/i.test(other.properties.STORMTYPE)
+      );
+      if (!other?.properties?.STORMNAME) {
+        other = sameName.find(other => !!other.properties.STORMNAME);
+      }
+      if (other) {
+        feature.properties.label = other.properties.STORMNAME;
+      }
+    });
+}
+
+/*
+ * Given a [filename, shapefile-to-GeoJSON-Feature source] pair,
  * returns an array of features
  */
-async function getFeatures([kind, source]) {
+async function getFeatures([filename, source]) {
   const features = [];
 
   while (true) {
     const result = await source.read();
     if (result.done) break;
-    result.value.properties.kind = kind;
+    result.value.properties.filename = filename;
     features.push(result.value);
   }
 
@@ -33,7 +58,7 @@ async function getFeatures([kind, source]) {
 
 /*
  * Given a URL of a zipfile of shapefiles,
- * returns an array of [kind, shapefile-to-GeoJSON-Feature source] pairs
+ * returns an array of [filename, shapefile-to-GeoJSON-Feature source] pairs
  */
 async function getFeatureSources(link) {
   const res = await fetch(link);
@@ -46,16 +71,15 @@ async function getFeatureSources(link) {
 
   const promises = [];
   archive.forEach((relativePath, file) => {
-    const match = /_(lin|pgn|pts|wwlin)\.shp$/.exec(relativePath);
-    if (match) {
-      const dbfPath = `${relativePath.slice(0, -4)}.dbf`;
-      const kind = match[1];
+    if (/(_5day_lin|_5day_pgn|_5day_pts|wwlin)\.shp$/.test(relativePath)) {
+      const filename = relativePath.slice(0, -4);
+      const dbfPath = `${filename}.dbf`;
       promises.push(
         (async () => {
           const shp = await file.async('uint8array');
           const dbf = await archive.file(dbfPath)?.async('uint8array');
           const source = await shapefile.open(shp, dbf);
-          return [kind, source];
+          return [filename, source];
         })()
       );
     }
@@ -82,6 +106,7 @@ async function processFeeds(...feeds) {
   const links = (await Promise.all(feeds.map(getZipLinks))).flat();
   const sources = (await Promise.all(links.map(getFeatureSources))).flat();
   const features = (await Promise.all(sources.map(getFeatures))).flat();
+  addLabels(features);
 
   return JSON.stringify({ features, type: 'FeatureCollection' });
 }

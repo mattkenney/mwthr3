@@ -2,11 +2,18 @@ import { Feature, FeatureCollection, GeoJsonObject, Geometry } from 'geojson';
 import { GeoJSON } from 'react-leaflet';
 import * as leaflet from 'leaflet';
 
-const pointToLayer = (_: unknown, center: leaflet.LatLngExpression) =>
-  new leaflet.Circle(center, { color: '#333', opacity: 0.5, radius: 9 });
+const pointToLayer = (feat: Feature, center: leaflet.LatLngExpression) => {
+  if (feat.properties?.label) {
+    return new leaflet.Marker(center, { opacity: 0 }).bindTooltip(
+      feat.properties.label,
+      { direction: 'bottom', opacity: 0.5, permanent: true }
+    );
+  }
+  return new leaflet.Circle(center, { color: '#333', opacity: 0.5, radius: 9 });
+};
 
 const style = (feat?: Feature<Geometry>) => {
-  switch (feat?.properties?.kind) {
+  switch (feat?.properties?.filename?.split('_')?.pop()) {
     case 'lin': // AKA line - storm path forecast
       return {
         color: '#666',
