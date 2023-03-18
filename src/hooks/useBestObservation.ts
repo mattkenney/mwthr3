@@ -1,7 +1,14 @@
 import KDTree from 'mnemonist/kd-tree';
 
 import { useObservations, useStations } from './nws';
-import type { GridPoint, Observation, Stations } from '../types/nws';
+import type {
+  GridPoint,
+  Observation,
+  ObservationProperties,
+  Stations,
+} from '../types/nws';
+
+type ObservationField = keyof ObservationProperties;
 
 function nearest(stations?: Stations, coordinates?: [number, number]) {
   if (!stations || !coordinates) return [];
@@ -10,13 +17,13 @@ function nearest(stations?: Stations, coordinates?: [number, number]) {
   return kd.kNearestNeighbors(6, coordinates);
 }
 
-function pickValue(obs?: Observation[]) {
+function pickValue(obs: Observation[] | undefined, field: ObservationField) {
   if (!obs) return;
 
   // filter to observations that are numbers
   const values = obs
-    .map(ob => ob?.properties?.temperature?.value)
-    .filter(value => typeof value === 'number');
+    .map(ob => ob?.properties?.[field]?.value)
+    .filter(value => typeof value === 'number') as [number];
 
   // throw out highest an lowest and return first remaining
   if (values.length > 2) {
@@ -37,7 +44,7 @@ function pickValue(obs?: Observation[]) {
   return values[0];
 }
 
-export function useTemperature(gridPoint?: GridPoint) {
+export function useBestObservation(gridPoint?: GridPoint) {
   const stations = useStations(gridPoint);
   const coordinates =
     gridPoint?.properties?.relativeLocation?.geometry?.coordinates;
@@ -45,8 +52,23 @@ export function useTemperature(gridPoint?: GridPoint) {
   const results = useObservations(ids)
     .filter(r => !!r.data)
     .map(r => r.data);
-  const value = pickValue(results as Observation[]);
-  return typeof value === 'number'
-    ? ((value * 9) / 5 + 32).toFixed(0)
-    : undefined;
+  let value = pickValue(results as Observation[], 'temperature');
+  const temperature =
+    typeof value === 'number' ? Math.round((value * 9) / 5 + 32) : null;
+  value = pickValue(results as Observation[], 'windGust');
+  const windGust =
+    typeof value === 'number' ? Math.round((value * 15625) / 25146) : null;
+  value = pickValue(results as Observation[], 'windSpeed');
+  const windSpeed =
+    typeof value === 'number' ? Math.round((value * 15625) / 25146) : null;
+
+  if (temperature === null && windSpeed === null) return undefined;
+
+  return {
+    properties: {
+      temperature: { value: temperature },
+      windGust: { value: windGust },
+      windSpeed: { value: windSpeed },
+    },
+  };
 }
