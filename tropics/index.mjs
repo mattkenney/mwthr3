@@ -1,18 +1,23 @@
 #!/usr/bin/env node
 
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import fetch from 'node-fetch';
 import JSZip from 'jszip';
 import Parser from 'rss-parser';
 import shapefile from 'shapefile';
 
-// const feeds = [
-//   'http://www.nhc.noaa.gov/gis-at.xml',
-//   'http://www.nhc.noaa.gov/gis-ep.xml',
-// ];
 const feeds = [
-  'http://www.nhc.noaa.gov/rss_examples/gis-at-20130605.xml',
-  'http://www.nhc.noaa.gov/rss_examples/gis-ep-20130530.xml',
+  'http://www.nhc.noaa.gov/gis-at.xml',
+  'http://www.nhc.noaa.gov/gis-ep.xml',
 ];
+// const feeds = [
+//   'http://www.nhc.noaa.gov/rss_examples/gis-at-20130605.xml',
+//   'http://www.nhc.noaa.gov/rss_examples/gis-ep-20130530.xml',
+// ];
+
+const Bucket = 'mwthr';
+const ContentType = 'application/json; charset=utf-8';
+const Key = 'data/tropics.json';
 
 /*
  * Add `label` property to one storm path point per storm
@@ -111,4 +116,24 @@ async function processFeeds(...feeds) {
   return JSON.stringify({ features, type: 'FeatureCollection' });
 }
 
-processFeeds(...feeds).then(console.log);
+async function putData(Body) {
+  // 3 hours 15 minutes from now
+  const Expires = new Date(Date.now() + (3 * 60 + 15) * 60 * 1000);
+  const client = new S3Client();
+  const command = new PutObjectCommand({
+    Body,
+    Bucket,
+    ContentType,
+    Expires,
+    Key,
+  });
+  return client.send(command);
+}
+
+export async function handler(...args) {
+  console.log({ args });
+  const Body = await processFeeds(...feeds);
+  console.log({ Body });
+  const result = await putData(Body);
+  console.log({ result });
+}
