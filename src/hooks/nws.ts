@@ -18,6 +18,7 @@ import type {
   GridPoint,
   Observation,
   Stations,
+  WxAlerts,
 } from '../types/nws';
 
 const client = axios.create({ timeout: 6000 });
@@ -46,6 +47,13 @@ function getOptions<T>(url?: string, config?: AxiosRequestConfig) {
     },
     retry: false, // using axios-retry instead
   };
+}
+
+export function useAlerts(point?: GridPoint) {
+  const coordinates = getCoordinates(point);
+  const coords = coordinates && coordinates.slice().reverse().join();
+  const url = coords && `https://api.weather.gov/alerts/active?point=${coords}`;
+  return useQuery(getOptions<WxAlerts>(url));
 }
 
 export function useForecast(point?: GridPoint) {

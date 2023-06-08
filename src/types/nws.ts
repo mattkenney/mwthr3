@@ -63,3 +63,16 @@ export interface Station {
 export interface Stations {
   features: Station[];
 }
+
+export interface WxAlert {
+  id: string;
+  properties: {
+    event: string;
+    headline: string;
+    description: string;
+  };
+}
+
+export interface WxAlerts {
+  features: WxAlert[];
+}
