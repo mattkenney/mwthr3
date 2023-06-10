@@ -38,7 +38,8 @@ export function Forecast({ gridPoint }: ForecastProps) {
   const navigate = useNavigate();
   const result = useForecast(gridPoint);
   const periods = result.data?.properties?.periods;
-  const n = Number(location.hash.substring(1));
+  const hash = location.hash.substring(1);
+  const n = /^[1-9][0-9]*$/.test(hash) ? Number(hash) : 0;
   const hourlyPeriod = periods?.[n - 1];
 
   if (!periods) return null;

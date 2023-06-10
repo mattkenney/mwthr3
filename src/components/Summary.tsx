@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
@@ -6,6 +5,7 @@ import Place from '@mui/icons-material/Place';
 import Refresh from '@mui/icons-material/Refresh';
 import WarningAmber from '@mui/icons-material/WarningAmber';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import type { GridPoint, Observation, WxAlerts } from '../types/nws';
 import { useAlerts, getCityState, useRefresh } from '../hooks/nws';
@@ -48,24 +48,23 @@ export function Summary({ chooseWhere, gridPoint }: SummaryProps) {
   const { city, state } = getCityState(gridPoint);
   const observation = useBestObservation(gridPoint);
   const refresh = useRefresh();
-  const [alertLabel, setAlertLabel] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
   const alerts = useAlerts(gridPoint);
+  const alertLabel = decodeURIComponent(location.hash.substring(1));
   const alertLabels = makeAlertLabels(alerts?.data);
-  const count =
-    (city && state ? 1 : 0) +
-    (observation ? 1 : 0) +
-    (alertLabels ? alertLabels.length : 0);
-  const isWide = useMediaQuery(`(min-width:${230 * count}px)`);
 
   return (
     <Stack
-      direction={isWide ? 'row' : 'column'}
+      direction="row"
+      flexWrap="wrap"
       spacing={1}
-      sx={{ minHeight: isWide ? 32 : 72 }}
+      sx={{ minHeight: 32 }}
+      useFlexGap={true}
     >
       <WeatherAlert
         data={alerts?.data}
-        onClose={() => setAlertLabel('')}
+        onClose={() => navigate('#')}
         title={alertLabel}
       />
       {city && state && (
@@ -91,7 +90,7 @@ export function Summary({ chooseWhere, gridPoint }: SummaryProps) {
           <Chip
             icon={<WarningAmber />}
             label={label}
-            onClick={() => setAlertLabel(label)}
+            onClick={() => navigate(`#${encodeURIComponent(label)}`)}
           />
         </Box>
       ))}
