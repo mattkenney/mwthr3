@@ -24,7 +24,7 @@ const { base } = JSON.parse(dataElement.innerText) as Config;
 
 const getCenter = (width: number, pacific?: boolean): [number, number] => {
   const longitude = -Math.max(50, Math.min(70, 95 - width * 0.05));
-  return pacific ? [35, -125] : [35, longitude];
+  return pacific ? [30, -125] : [30, longitude];
 };
 
 interface PannerProps {

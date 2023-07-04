@@ -6,7 +6,12 @@ const pointToLayer = (feat: Feature, center: leaflet.LatLngExpression) => {
   if (feat.properties?.label) {
     return new leaflet.Marker(center, { opacity: 0 }).bindTooltip(
       feat.properties.label,
-      { direction: 'bottom', opacity: 0.5, permanent: true }
+      {
+        className: 'cyclone',
+        direction: 'center',
+        offset: [-20, 40],
+        permanent: true,
+      }
     );
   }
   return new leaflet.Circle(center, { color: '#333', opacity: 0.5, radius: 9 });
