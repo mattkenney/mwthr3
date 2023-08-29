@@ -34,7 +34,7 @@ const style = (feat?: Feature<Geometry>) => {
 
     case 'wwlin': // watch & warning line
       return {
-        color: feat?.properties?.TCWW === 'TWR' ? '#f00' : '#fb0',
+        color: /^[HT]WA$/.test(feat?.properties?.TCWW) ? '#fb0' : '#f00',
       };
 
     default: // 'pts' AKA points - storm path points
