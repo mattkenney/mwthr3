@@ -11,7 +11,7 @@ import type {
 type ObservationField = keyof ObservationProperties;
 
 function nearest(stations?: Stations, coordinates?: [number, number]) {
-  if (!stations || !coordinates) return [];
+  if (!stations?.features?.length || !coordinates) return [];
   const mapped = stations.features.map(s => [s.id, s.geometry.coordinates]);
   const kd = KDTree.from(mapped as [[string, number[]]], 2);
   return kd.kNearestNeighbors(6, coordinates);
