@@ -1,3 +1,4 @@
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -41,6 +42,17 @@ export function Forecast({ gridPoint }: ForecastProps) {
   const hash = location.hash.substring(1);
   const n = /^[1-9][0-9]*$/.test(hash) ? Number(hash) : 0;
   const hourlyPeriod = periods?.[n - 1];
+
+  if (result.isError) {
+    return (
+      <>
+        <Divider />
+        <Alert severity="error">
+          Something went wrong getting the forecast from the NWS.
+        </Alert>
+      </>
+    );
+  }
 
   if (!periods) return null;
 

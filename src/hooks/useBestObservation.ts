@@ -49,9 +49,11 @@ export function useBestObservation(gridPoint?: GridPoint) {
   const coordinates =
     gridPoint?.properties?.relativeLocation?.geometry?.coordinates;
   const ids = nearest(stations.data, coordinates);
-  const results = useObservations(ids)
-    .filter(r => !!r.data)
-    .map(r => r.data);
+  const observations = useObservations(ids);
+  const results = observations.filter(r => !!r.data).map(r => r.data);
+  const isError =
+    stations.isError ||
+    (observations?.length > 0 && observations.every(obs => obs.isError));
   let value = pickValue(results as Observation[], 'temperature');
   const temperature =
     typeof value === 'number' ? Math.round((value * 9) / 5 + 32) : null;
@@ -62,9 +64,10 @@ export function useBestObservation(gridPoint?: GridPoint) {
   const windSpeed =
     typeof value === 'number' ? Math.round((value * 15625) / 25146) : null;
 
-  if (temperature === null && windSpeed === null) return undefined;
+  if (temperature === null && windSpeed === null) return { isError };
 
   return {
+    isError,
     properties: {
       temperature: { value: temperature },
       windGust: { value: windGust },

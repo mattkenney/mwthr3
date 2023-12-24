@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Place from '@mui/icons-material/Place';
+import QuestionMark from '@mui/icons-material/QuestionMark';
 import Refresh from '@mui/icons-material/Refresh';
 import WarningAmber from '@mui/icons-material/WarningAmber';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -76,12 +77,23 @@ export function Summary({ chooseWhere, gridPoint }: SummaryProps) {
           />
         </Box>
       )}
-      {observation && (
+      {observation?.properties && (
         <Box>
           <Chip
             icon={<Refresh />}
             label={makeObservationLabel(observation)}
             onClick={refresh}
+          />
+        </Box>
+      )}
+      {observation?.isError && (
+        <Box>
+          <Chip
+            color="error"
+            icon={<Refresh />}
+            label={<QuestionMark />}
+            onClick={refresh}
+            variant="outlined"
           />
         </Box>
       )}
