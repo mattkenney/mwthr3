@@ -25,16 +25,15 @@ export interface GridPoint {
   };
 }
 
+export interface ObservationValue {
+  value: number | null;
+}
+
 export interface ObservationProperties {
-  temperature: {
-    value: number | null;
-  };
-  windGust: {
-    value: number | null;
-  };
-  windSpeed: {
-    value: number | null;
-  };
+  temperature?: ObservationValue;
+  timestamp?: string;
+  windGust?: ObservationValue;
+  windSpeed?: ObservationValue;
 }
 
 export interface Observation {

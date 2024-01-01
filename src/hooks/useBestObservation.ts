@@ -5,36 +5,44 @@ import type {
   GridPoint,
   Observation,
   ObservationProperties,
+  ObservationValue,
   Stations,
 } from '../types/nws';
 
 type ObservationField = keyof ObservationProperties;
 
+const NEIGHBOR_COUNT = 6;
+const OUTLIER_CUTOFF = 0.9;
+const TIMESTAMP_CUTOFF = 12 * 60 * 60 * 1000;
+
 function nearest(stations?: Stations, coordinates?: [number, number]) {
   if (!stations?.features?.length || !coordinates) return [];
   const mapped = stations.features.map(s => [s.id, s.geometry.coordinates]);
   const kd = KDTree.from(mapped as [[string, number[]]], 2);
-  return kd.kNearestNeighbors(6, coordinates);
+  return kd.kNearestNeighbors(NEIGHBOR_COUNT, coordinates);
 }
 
 function pickValue(obs: Observation[] | undefined, field: ObservationField) {
   if (!obs) return;
 
-  // filter to observations that are numbers
+  // filter to observations that are recent and contain a number value
+  const timestamp = new Date(Date.now() - TIMESTAMP_CUTOFF).toISOString();
   const values = obs
-    .map(ob => ob?.properties?.[field]?.value)
+    .filter(ob => (ob?.properties?.timestamp ?? '') > timestamp)
+    .map(ob => (ob?.properties?.[field] as ObservationValue)?.value)
     .filter(value => typeof value === 'number') as [number];
 
-  // throw out highest an lowest and return first remaining
+  // throw out likely outliers and return first remaining
   if (values.length > 2) {
-    const max = values.reduce(
-      (max, value) => (max < value ? value : max),
-      Number.MIN_VALUE
+    const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+    const sigma = Math.sqrt(
+      values.reduce(
+        (variance, value) => variance + (value - mean) * (value - mean),
+        0
+      ) / values.length
     );
-    const min = values.reduce(
-      (min, value) => (min > value ? value : min),
-      Number.MAX_VALUE
-    );
+    const max = mean + sigma * OUTLIER_CUTOFF;
+    const min = mean - sigma * OUTLIER_CUTOFF;
     const filtered = values.filter(value => min < value && value < max);
 
     if (filtered.length) return filtered[0];
