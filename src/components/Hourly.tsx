@@ -14,7 +14,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { useHourlyForecast } from '../hooks/nws';
 import type { GridPoint, Period } from '../types/nws';
-import { formatName } from './Forecast';
+import { formatName } from '../format';
 
 interface HourlyProps {
   gridPoint?: GridPoint;
@@ -39,7 +39,7 @@ export function Hourly({ gridPoint, period, onClose, open }: HourlyProps) {
   const range = periods.filter(
     row =>
       (!period?.startTime || row.startTime >= period?.startTime) &&
-      (!period?.endTime || row.endTime <= period?.endTime)
+      (!period?.endTime || row.endTime <= period?.endTime),
   );
 
   return (

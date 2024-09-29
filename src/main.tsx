@@ -14,19 +14,21 @@ import { App } from './App';
 import { theme } from './theme';
 
 const rootElement = document.getElementById('root');
-const root = createRoot(rootElement!);
+if (rootElement) {
+  const root = createRoot(rootElement);
 
-const queryClient = new QueryClient();
+  const queryClient = new QueryClient();
 
-root.render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Container sx={{ paddingBottom: 2, paddingTop: 2 }}>
-          <App />
-        </Container>
-      </ThemeProvider>
-    </QueryClientProvider>
-  </StrictMode>
-);
+  root.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Container sx={{ paddingBottom: 2, paddingTop: 2 }}>
+            <App />
+          </Container>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </StrictMode>,
+  );
+}

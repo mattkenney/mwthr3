@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 export function useGeolocation() {
   const [position, setPosition] = useState(
-    undefined as undefined | GeolocationPosition
+    undefined as undefined | GeolocationPosition,
   );
 
   const success = (position: GeolocationPosition) => {

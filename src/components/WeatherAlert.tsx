@@ -24,7 +24,7 @@ export function WeatherAlert({ data, onClose, title }: WeatherAlertProps) {
   const fullScreen = !useMediaQuery('(min-width:460px)');
 
   const features = data?.features?.filter(
-    feature => feature?.properties?.event === title
+    feature => feature?.properties?.event === title,
   );
 
   return (

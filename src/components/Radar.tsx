@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, WMSTileLayer, useMap } from 'react-leaflet';
 import { WMSParams } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -16,8 +16,8 @@ interface Config {
   };
 }
 
-const dataElement = document.getElementById('data') as HTMLElement;
-const { base, radar } = JSON.parse(dataElement.innerText) as Config;
+const dataElement = document.getElementById('data');
+const { base, radar } = JSON.parse(dataElement?.innerText ?? '{}') as Config;
 
 // two minute cache interval
 const interval = () => Math.round(Date.now() / (2 * 60 * 1000));
@@ -44,12 +44,12 @@ export function Radar({ latitude, longitude }: RadarProps) {
   const spinnerRef = useRef<SetBooleanFn>();
   const [timestamp, setTimestamp] = useState(interval());
 
-  const handler = () => {
+  const handler = useCallback(() => {
     if (document.visibilityState === 'visible') {
       setTimestamp(interval());
       spinnerRef.current && spinnerRef.current(true);
     }
-  };
+  }, []);
 
   useEffect(() => {
     window.addEventListener('focus', handler, false);

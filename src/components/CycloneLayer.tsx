@@ -1,24 +1,24 @@
-import { Feature, FeatureCollection, GeoJsonObject, Geometry } from 'geojson';
+import { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
 import { GeoJSON } from 'react-leaflet';
 import * as leaflet from 'leaflet';
 
 const pointToLayer = (feat: Feature, center: leaflet.LatLngExpression) => {
   if (feat.properties?.label) {
     return new leaflet.Marker(center, { opacity: 0 }).bindTooltip(
-      feat.properties.label,
+      String(feat.properties.label),
       {
         className: 'cyclone',
         direction: 'center',
         offset: [-20, 40],
         permanent: true,
-      }
+      },
     );
   }
   return new leaflet.Circle(center, { color: '#333', opacity: 0.5, radius: 9 });
 };
 
-const style = (feat?: Feature<Geometry>) => {
-  switch (feat?.properties?.filename?.split('_')?.pop()) {
+const style = (feat?: Feature) => {
+  switch (String(feat?.properties?.filename).split('_').pop()) {
     case 'lin': // AKA line - storm path forecast
       return {
         color: '#666',
@@ -34,7 +34,9 @@ const style = (feat?: Feature<Geometry>) => {
 
     case 'wwlin': // watch & warning line
       return {
-        color: /^[HT]WA$/.test(feat?.properties?.TCWW) ? '#fb0' : '#f00',
+        color: /^[HT]WA$/.test(String(feat?.properties?.TCWW))
+          ? '#fb0'
+          : '#f00',
       };
 
     default: // 'pts' AKA points - storm path points

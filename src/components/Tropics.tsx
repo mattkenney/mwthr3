@@ -19,8 +19,8 @@ interface Config {
   };
 }
 
-const dataElement = document.getElementById('data') as HTMLElement;
-const { base } = JSON.parse(dataElement.innerText) as Config;
+const dataElement = document.getElementById('data');
+const { base } = JSON.parse(dataElement?.innerText ?? '{}') as Config;
 
 const getCenter = (width: number, pacific?: boolean): [number, number] => {
   const longitude = -Math.max(50, Math.min(70, 95 - width * 0.05));
@@ -56,7 +56,7 @@ export function Tropics({ pacific }: TropicsProps) {
 
   const regex = pacific ? /^ep$/i : /^al$/i;
   const showNoActivity = !tropics.data?.features?.some(feat =>
-    regex.test(feat?.properties?.BASIN)
+    regex.test(String(feat?.properties?.BASIN)),
   );
 
   return (

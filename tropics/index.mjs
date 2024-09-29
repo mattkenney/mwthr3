@@ -30,10 +30,10 @@ function addLabels(features) {
       if (filenames.has(feature.properties.filename)) return;
       filenames.add(feature.properties.filename);
       const sameName = features.filter(
-        other => other.properties.filename === feature.properties.filename
+        other => other.properties.filename === feature.properties.filename,
       );
       let other = sameName.find(other =>
-        /(^TS)|(^Tropical Storm)|(^HU)/i.test(other.properties.STORMTYPE)
+        /(^TS)|(^Tropical Storm)|(^HU)/i.test(other.properties.STORMTYPE),
       );
       if (!other?.properties?.STORMNAME) {
         other = sameName.find(other => !!other.properties.STORMNAME);
@@ -85,7 +85,7 @@ async function getFeatureSources(link) {
           const dbf = await archive.file(dbfPath)?.async('uint8array');
           const source = await shapefile.open(shp, dbf);
           return [filename, source];
-        })()
+        })(),
       );
     }
   });
@@ -103,7 +103,7 @@ async function getZipLinks(url) {
   return feed.items
     .map(item => item.link)
     .filter(link =>
-      /((_5day_[^/]*)|(_best_track_latest)|(_fcst_[^/]*)).zip$/.test(link)
+      /((_5day_[^/]*)|(_best_track_latest)|(_fcst_[^/]*)).zip$/.test(link),
     );
 }
 

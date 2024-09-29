@@ -20,7 +20,7 @@ function makeError(
   currentCount: number,
   setIsError: (flag: boolean) => void,
   setIsLocating: (flag: boolean) => void,
-  setWhere?: (where: string) => void
+  setWhere?: (where: string) => void,
 ) {
   return (positionError: GeolocationPositionError) => {
     console.error({ count, currentCount, positionError });
@@ -35,7 +35,7 @@ function makeError(
 function makeSuccess(
   currentCount: number,
   setIsLocating: (flag: boolean) => void,
-  setWhere?: (where: string) => void
+  setWhere?: (where: string) => void,
 ) {
   return (position: GeolocationPosition) => {
     if (currentCount !== count) return;
@@ -65,7 +65,7 @@ export function Where({ open, setOpen, setWhere }: WhereProps) {
       count++;
       navigator.geolocation.getCurrentPosition(
         makeSuccess(count, setIsLocating, setWhere),
-        makeError(count, setIsError, setIsLocating, setWhere)
+        makeError(count, setIsError, setIsLocating, setWhere),
       );
     } else {
       setIsLocating(false);

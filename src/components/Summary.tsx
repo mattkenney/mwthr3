@@ -5,7 +5,6 @@ import Place from '@mui/icons-material/Place';
 import QuestionMark from '@mui/icons-material/QuestionMark';
 import Refresh from '@mui/icons-material/Refresh';
 import WarningAmber from '@mui/icons-material/WarningAmber';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import type { GridPoint, Observation, WxAlerts } from '../types/nws';

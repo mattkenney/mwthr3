@@ -30,7 +30,7 @@ function pickValue(obs: Observation[] | undefined, field: ObservationField) {
   const values = obs
     .filter(ob => (ob?.properties?.timestamp ?? '') > timestamp)
     .map(ob => (ob?.properties?.[field] as ObservationValue)?.value)
-    .filter(value => typeof value === 'number') as [number];
+    .filter(value => typeof value === 'number');
 
   // throw out likely outliers and return first remaining
   if (values.length > 2) {
@@ -38,8 +38,8 @@ function pickValue(obs: Observation[] | undefined, field: ObservationField) {
     const sigma = Math.sqrt(
       values.reduce(
         (variance, value) => variance + (value - mean) * (value - mean),
-        0
-      ) / values.length
+        0,
+      ) / values.length,
     );
     const max = mean + sigma * OUTLIER_CUTOFF;
     const min = mean - sigma * OUTLIER_CUTOFF;
@@ -62,13 +62,13 @@ export function useBestObservation(gridPoint?: GridPoint) {
   const isError =
     stations.isError ||
     (observations?.length > 0 && observations.every(obs => obs.isError));
-  let value = pickValue(results as Observation[], 'temperature');
+  let value = pickValue(results, 'temperature');
   const temperature =
     typeof value === 'number' ? Math.round((value * 9) / 5 + 32) : null;
-  value = pickValue(results as Observation[], 'windGust');
+  value = pickValue(results, 'windGust');
   const windGust =
     typeof value === 'number' ? Math.round((value * 15625) / 25146) : null;
-  value = pickValue(results as Observation[], 'windSpeed');
+  value = pickValue(results, 'windSpeed');
   const windSpeed =
     typeof value === 'number' ? Math.round((value * 15625) / 25146) : null;
 

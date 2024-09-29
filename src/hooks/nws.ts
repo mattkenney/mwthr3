@@ -51,7 +51,7 @@ function getOptions<T>(url?: string, config?: AxiosRequestConfig) {
 
 export function useAlerts(point?: GridPoint) {
   const coordinates = getCoordinates(point);
-  const coords = coordinates && coordinates.slice().reverse().join();
+  const coords = coordinates?.slice().reverse().join();
   const url = coords && `https://api.weather.gov/alerts/active?point=${coords}`;
   return useQuery(getOptions<WxAlerts>(url));
 }
@@ -86,7 +86,9 @@ export function useRefresh() {
   const client = useQueryClient();
 
   return () => {
-    client.resetQueries();
+    client.resetQueries().catch((err: unknown) => {
+      console.error(err);
+    });
   };
 }
 

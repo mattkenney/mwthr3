@@ -11,24 +11,10 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { formatName } from '../format';
 import { useForecast } from '../hooks/nws';
-import type { GridPoint, Period } from '../types/nws';
+import type { GridPoint } from '../types/nws';
 import { Hourly } from './Hourly';
-
-function formatDate(str: string) {
-  return new Date(str).toLocaleString(undefined, {
-    month: 'numeric',
-    day: 'numeric',
-  });
-}
-
-export function formatName(row: Period) {
-  if (row.isDaytime) {
-    const when = formatDate(row.startTime);
-    return `${row.name} ${when}`;
-  }
-  return row.name;
-}
 
 interface ForecastProps {
   gridPoint?: GridPoint;
@@ -98,7 +84,7 @@ export function Forecast({ gridPoint }: ForecastProps) {
                     {row.detailedForecast}
                     {n + 1 < rows.length && (
                       <IconButton
-                        onClick={() => navigate(`#${n + 1}`)}
+                        onClick={() => navigate(`#${String(n + 1)}`)}
                         sx={{ float: 'right' }}
                       >
                         <Schedule />
