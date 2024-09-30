@@ -20,6 +20,7 @@ interface ForecastProps {
   gridPoint?: GridPoint;
 }
 
+export default Forecast;
 export function Forecast({ gridPoint }: ForecastProps) {
   const location = useLocation();
   const navigate = useNavigate();

@@ -9,7 +9,7 @@
     "ci-lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "dev": "vite",
     "format": "prettier --write .",
-    "preview": "vite preview --host 0.0.0.0",
+    "preview": "vite preview",
     "prepare": "husky"
   },
   "dependencies": {

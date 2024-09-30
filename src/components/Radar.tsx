@@ -40,6 +40,7 @@ interface RadarProps {
   longitude?: number;
 }
 
+export default Radar;
 export function Radar({ latitude, longitude }: RadarProps) {
   const spinnerRef = useRef<SetBooleanFn>();
   const [timestamp, setTimestamp] = useState(interval());

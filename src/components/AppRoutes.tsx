@@ -1,12 +1,14 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Link, Navigate, Route, Routes } from 'react-router-dom';
 
 import { AppBarTabs } from './AppBarTabs';
-import { Forecast } from './Forecast';
-import { Radar } from './Radar';
-import { Tropics } from './Tropics';
 import { WeatherCard } from './WeatherCard';
 import { getCoordinates } from '../hooks/nws';
 import type { GridPoint } from '../types/nws';
+
+const Forecast = lazy(() => import('./Forecast'));
+const Radar = lazy(() => import('./Radar'));
+const Tropics = lazy(() => import('./Tropics'));
 
 const tabs = [
   { label: 'Radar', to: 'radar' },
@@ -32,7 +34,9 @@ export function AppRoutes({ chooseWhere, gridPoint }: AppRoutesProps) {
             <>
               <AppBarTabs component={Link} tabs={tabs} value="radar" />
               <WeatherCard chooseWhere={chooseWhere} gridPoint={gridPoint}>
-                <Radar longitude={longitude} latitude={latitude} />
+                <Suspense>
+                  <Radar longitude={longitude} latitude={latitude} />
+                </Suspense>
               </WeatherCard>
             </>
           }
@@ -43,7 +47,9 @@ export function AppRoutes({ chooseWhere, gridPoint }: AppRoutesProps) {
             <>
               <AppBarTabs component={Link} tabs={tabs} value="forecast" />
               <WeatherCard chooseWhere={chooseWhere} gridPoint={gridPoint}>
-                <Forecast gridPoint={gridPoint} />
+                <Suspense>
+                  <Forecast gridPoint={gridPoint} />
+                </Suspense>
               </WeatherCard>
             </>
           }
@@ -54,7 +60,9 @@ export function AppRoutes({ chooseWhere, gridPoint }: AppRoutesProps) {
             <>
               <AppBarTabs component={Link} tabs={tabs} value="atlantic" />
               <WeatherCard chooseWhere={chooseWhere} gridPoint={gridPoint}>
-                <Tropics />
+                <Suspense>
+                  <Tropics />
+                </Suspense>
               </WeatherCard>
             </>
           }
@@ -65,7 +73,9 @@ export function AppRoutes({ chooseWhere, gridPoint }: AppRoutesProps) {
             <>
               <AppBarTabs component={Link} tabs={tabs} value="pacific" />
               <WeatherCard chooseWhere={chooseWhere} gridPoint={gridPoint}>
-                <Tropics pacific={true} />
+                <Suspense>
+                  <Tropics pacific={true} />
+                </Suspense>
               </WeatherCard>
             </>
           }

@@ -48,6 +48,7 @@ interface TropicsProps {
   pacific?: boolean;
 }
 
+export default Tropics;
 export function Tropics({ pacific }: TropicsProps) {
   const height = 'max(400px, min(60vh, 1152px))';
   const { ref, width } = useResizeDetector();
