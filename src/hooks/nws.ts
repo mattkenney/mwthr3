@@ -1,9 +1,3 @@
-import axios, { AxiosRequestConfig } from 'axios';
-import axiosRetry, {
-  exponentialDelay as retryDelay,
-  isNetworkError,
-  isRetryableError,
-} from 'axios-retry';
 import {
   useIsFetching,
   useQueries,
@@ -11,6 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
+import { logger } from '../logger';
 import type {
   CityState,
   Coordinates,
@@ -21,14 +16,6 @@ import type {
   WxAlerts,
 } from '../types/nws';
 
-const client = axios.create({ timeout: 6000 });
-
-axiosRetry(client, {
-  retries: 8,
-  retryCondition: err => isNetworkError(err) || isRetryableError(err),
-  retryDelay,
-});
-
 export function getCityState(point?: GridPoint): Partial<CityState> {
   return point?.properties?.relativeLocation?.properties ?? {};
 }
@@ -37,15 +24,18 @@ export function getCoordinates(point?: GridPoint): Coordinates | undefined {
   return point?.properties?.relativeLocation?.geometry?.coordinates;
 }
 
-function getOptions<T>(url?: string, config?: AxiosRequestConfig) {
+function getOptions<T>(url?: string, allStatusOK = false) {
   return {
     enabled: !!url,
     queryKey: [url],
     queryFn: async () => {
-      const res = await client.get<T>(url ?? '', config);
-      return res.data;
+      const res = await fetch(url ?? '', { signal: AbortSignal.timeout(6000) });
+      if (!allStatusOK && res.status >= 300) {
+        throw new Error(`HTTP error ${String(res.status)}: ${res.statusText}`);
+      }
+      return res.json() as Promise<T>;
     },
-    retry: false, // using axios-retry instead
+    retry: 8,
   };
 }
 
@@ -77,7 +67,7 @@ export function useObservations(ids?: string[]) {
   return useQueries({
     queries: (ids ?? []).map(id => {
       const url = id && `${id}/observations/latest`;
-      return getOptions<Observation>(url, { validateStatus: () => true });
+      return getOptions<Observation>(url, true);
     }),
   });
 }
@@ -87,7 +77,7 @@ export function useRefresh() {
 
   return () => {
     client.resetQueries().catch((err: unknown) => {
-      console.error(err);
+      logger.error(err);
     });
   };
 }

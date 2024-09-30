@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { logger } from '../logger';
+
 export function useGeolocation() {
   const [position, setPosition] = useState(
     undefined as undefined | GeolocationPosition,
@@ -10,7 +12,7 @@ export function useGeolocation() {
   };
 
   const error = (positionError: GeolocationPositionError) => {
-    console.error({ positionError });
+    logger.error({ positionError });
   };
 
   const effect = () => navigator.geolocation.getCurrentPosition(success, error);

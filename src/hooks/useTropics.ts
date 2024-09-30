@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { FeatureCollection } from 'geojson';
 
+import { logger } from '../logger';
+
 export function useTropics() {
   const url = '/data/tropics.json';
   return useQuery({
@@ -12,7 +14,7 @@ export function useTropics() {
           return (await res.json()) as FeatureCollection;
         }
       } catch (err: unknown) {
-        console.log({ err });
+        logger.error({ err, url });
       }
       return { features: [], type: 'FeatureCollection' } as FeatureCollection;
     },

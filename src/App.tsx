@@ -1,9 +1,12 @@
 import Snackbar from '@mui/material/Snackbar';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 
 import { AppRoutes } from './components/AppRoutes';
-import { fallback, Where } from './components/Where';
 import { useGridPoint } from './hooks/nws';
+
+const Where = lazy(() => import('./components/Where'));
+
+const fallback = '40.6509,-74.0113';
 
 export function App() {
   const [chooseOpen, setChooseOpen] = useState(false);
@@ -24,7 +27,14 @@ export function App() {
         chooseWhere={() => setChooseOpen(true)}
         gridPoint={gridPoint}
       />
-      <Where open={chooseOpen} setOpen={setChooseOpen} setWhere={setWhere} />
+      <Suspense>
+        <Where
+          fallback={fallback}
+          open={chooseOpen}
+          setOpen={setChooseOpen}
+          setWhere={setWhere}
+        />
+      </Suspense>
       <Snackbar
         key="gridpoint"
         anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}

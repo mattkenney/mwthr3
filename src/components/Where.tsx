@@ -10,9 +10,9 @@ import Snackbar from '@mui/material/Snackbar';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
-type Row = [string, number, number];
+import { logger } from '../logger';
 
-export const fallback = '40.6509,-74.0113';
+type Row = [string, number, number];
 
 let count = 0;
 
@@ -20,15 +20,16 @@ function makeError(
   currentCount: number,
   setIsError: (flag: boolean) => void,
   setIsLocating: (flag: boolean) => void,
-  setWhere?: (where: string) => void,
+  setWhere: (where: string) => void,
+  fallback: string,
 ) {
   return (positionError: GeolocationPositionError) => {
-    console.error({ count, currentCount, positionError });
+    logger.error({ count, currentCount, positionError });
     if (currentCount !== count) return;
 
     setIsError(true);
     setIsLocating(false);
-    setWhere && setWhere(fallback);
+    setWhere(fallback);
   };
 }
 
@@ -51,12 +52,14 @@ function makeSuccess(
 }
 
 interface WhereProps {
-  open?: boolean;
-  setOpen?: (open: boolean) => void;
-  setWhere?: (where: string) => void;
+  fallback: string;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  setWhere: (where: string) => void;
 }
 
-export function Where({ open, setOpen, setWhere }: WhereProps) {
+export default Where;
+export function Where({ fallback, open, setOpen, setWhere }: WhereProps) {
   const [isLocating, setIsLocating] = useState(true);
   const [isError, setIsError] = useState(false);
 
@@ -65,7 +68,7 @@ export function Where({ open, setOpen, setWhere }: WhereProps) {
       count++;
       navigator.geolocation.getCurrentPosition(
         makeSuccess(count, setIsLocating, setWhere),
-        makeError(count, setIsError, setIsLocating, setWhere),
+        makeError(count, setIsError, setIsLocating, setWhere, fallback),
       );
     } else {
       setIsLocating(false);
@@ -73,7 +76,7 @@ export function Where({ open, setOpen, setWhere }: WhereProps) {
     }
   };
 
-  useEffect(getWhere, []);
+  useEffect(getWhere, [fallback]);
 
   const [value, setValue] = useState('');
   const url = /^[0-9a-z]/i.test(value)
