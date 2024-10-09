@@ -35,7 +35,8 @@ function getOptions<T>(url?: string, allStatusOK = false) {
       }
       return res.json() as Promise<T>;
     },
-    retry: 8,
+    retry: 5,
+    retryDelay: (n: number) => 100 * Math.pow(2, n),
   };
 }
 
@@ -52,7 +53,11 @@ export function useForecast(point?: GridPoint) {
 }
 
 export function useGridPoint(coords?: string) {
-  const url = coords && `https://api.weather.gov/points/${coords}`;
+  const fixed = coords
+    ?.split(',')
+    .map(part => Number(part).toFixed(4))
+    .join();
+  const url = fixed && `https://api.weather.gov/points/${fixed}`;
   return useQuery(getOptions<GridPoint>(url));
 }
 
