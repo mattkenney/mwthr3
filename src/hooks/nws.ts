@@ -53,10 +53,12 @@ export function useForecast(point?: GridPoint) {
 }
 
 export function useGridPoint(coords?: string) {
-  const fixed = coords
-    ?.split(',')
-    .map(part => Number(part).toFixed(4))
-    .join();
+  const fixed =
+    coords &&
+    coords
+      .split(',')
+      .map(part => Number(part).toFixed(4))
+      .join();
   const url = fixed && `https://api.weather.gov/points/${fixed}`;
   return useQuery(getOptions<GridPoint>(url));
 }
