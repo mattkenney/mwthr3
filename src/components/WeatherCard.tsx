@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import CircularProgress from '@mui/material/CircularProgress';
 import { ReactNode } from 'react';
 
+import { Spinner } from '../components/Spinner';
 import { Summary } from '../components/Summary';
-import { useIsFetching } from '../hooks/nws';
+import { useIsFetchingNws } from '../hooks/nws';
 import type { GridPoint } from '../types/nws';
 
 interface WeatherCardProps {
@@ -19,15 +19,15 @@ export function WeatherCard({
   chooseWhere,
   gridPoint,
 }: WeatherCardProps) {
-  const fetchingCount = useIsFetching();
+  const fetchingCount = useIsFetchingNws();
   const isLoading = !gridPoint || fetchingCount > 0;
 
   return (
     <Card>
       <CardContent>
         {isLoading && (
-          <Box sx={{ height: 0, textAlign: 'center' }}>
-            <CircularProgress size="1.6em" />
+          <Box sx={{ height: 0 }}>
+            <Spinner />
           </Box>
         )}
         <Summary chooseWhere={chooseWhere} gridPoint={gridPoint} />

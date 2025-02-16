@@ -16,6 +16,8 @@ import type {
   WxAlerts,
 } from '../types/nws';
 
+const markNwsQuery = 'markNwsQuery';
+
 export function getCityState(point?: GridPoint): Partial<CityState> {
   return point?.properties?.relativeLocation?.properties ?? {};
 }
@@ -27,7 +29,7 @@ export function getCoordinates(point?: GridPoint): Coordinates | undefined {
 function getOptions<T>(url?: string, allStatusOK = false) {
   return {
     enabled: !!url,
-    queryKey: [url],
+    queryKey: [url, markNwsQuery],
     queryFn: async () => {
       const res = await fetch(url ?? '', { signal: AbortSignal.timeout(6000) });
       if (!allStatusOK && res.status >= 300) {
@@ -69,6 +71,13 @@ export function useHourlyForecast(point?: GridPoint) {
 }
 
 export { useIsFetching };
+
+export function useIsFetchingNws() {
+  return useIsFetching({
+    predicate: query =>
+      query?.options?.queryKey?.includes(markNwsQuery) ?? false,
+  });
+}
 
 export function useObservations(ids?: string[]) {
   return useQueries({

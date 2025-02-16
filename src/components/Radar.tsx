@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, WMSTileLayer, useMap } from 'react-leaflet';
 import { WMSParams } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-import { SetBooleanFn, Spinner } from './Spinner';
+import { SetBooleanFn, RadarSpinner } from './RadarSpinner';
 
 interface Config {
   base: {
@@ -83,7 +83,7 @@ export function Radar({ latitude, longitude }: RadarProps) {
         params={params}
         url={radar.url}
       />
-      <Spinner spinnerRef={spinnerRef} />
+      <RadarSpinner spinnerRef={spinnerRef} />
     </MapContainer>
   );
 }
