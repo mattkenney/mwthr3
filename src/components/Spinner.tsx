@@ -27,7 +27,7 @@ export function Spinner() {
           zIndex: 1000,
         }}
       >
-        Getting weather data from US NWS...
+        Getting latest weather data from US NWS...
       </Box>
     </>
   );

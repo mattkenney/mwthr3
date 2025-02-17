@@ -20,7 +20,7 @@ export function WeatherCard({
   gridPoint,
 }: WeatherCardProps) {
   const fetchingCount = useIsFetchingNws();
-  const isLoading = !gridPoint || fetchingCount > 0;
+  const isLoading = fetchingCount > 0;
 
   return (
     <Card>
