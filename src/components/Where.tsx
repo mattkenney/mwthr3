@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Divider from '@mui/material/Divider';
+import LinearProgress from '@mui/material/LinearProgress';
 import Snackbar from '@mui/material/Snackbar';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -134,6 +135,7 @@ export function Where({ fallback, open, setOpen, setWhere }: WhereProps) {
     <>
       <Dialog open={isLocating} onClose={handleStop}>
         <DialogTitle>Finding your location...</DialogTitle>
+        <LinearProgress />
         <DialogActions>
           <Button onClick={handleStop}>Cancel</Button>
         </DialogActions>
