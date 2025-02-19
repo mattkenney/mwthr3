@@ -70,6 +70,7 @@ export function Where({ fallback, open, setOpen, setWhere }: WhereProps) {
       navigator.geolocation.getCurrentPosition(
         makeSuccess(count, setIsLocating, setWhere),
         makeError(count, setIsError, setIsLocating, setWhere, fallback),
+        { enableHighAccuracy: false, maximumAge: 3000000, timeout: 20000 },
       );
     } else {
       setIsLocating(false);
