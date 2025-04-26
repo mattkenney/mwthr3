@@ -40,7 +40,7 @@ function Panner({ pacific, width }: PannerProps) {
       map.panTo(getCenter(width, pacific));
       setPacific(!!pacific);
     }
-  }, [pacific]);
+  }, [isPacific, map, pacific, width]);
   return null;
 }
 

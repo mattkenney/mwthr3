@@ -55,7 +55,10 @@ export function useForecast(point?: GridPoint) {
 }
 
 export function useGridPoint(coords?: string) {
+  // not using optional chain on `coords` because we need to short-circuit
+  // on empty string, not just undefined (or null)
   const fixed =
+    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
     coords &&
     coords
       .split(',')

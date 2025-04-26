@@ -78,7 +78,7 @@ export function Where({ fallback, open, setOpen, setWhere }: WhereProps) {
     }
   };
 
-  useEffect(getWhere, [fallback]);
+  useEffect(getWhere, [fallback, setWhere]);
 
   const [value, setValue] = useState('');
   const url = /^[0-9a-z]/i.test(value)

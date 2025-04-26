@@ -31,7 +31,7 @@ function Panner({ latitude, longitude }: RadarProps) {
       map.panTo([latitude ?? 40, longitude ?? -75]);
       setCenter(coords);
     }
-  }, [latitude, longitude]);
+  }, [center, coords, latitude, longitude, map]);
   return null;
 }
 
