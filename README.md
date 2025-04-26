@@ -4,7 +4,7 @@ The code behind [mwthr.com](http://mwthr.com).
 
 ## License
 
-    Copyright 2013, 2014, 2017, 2020, 2021, 2023 Matt Kenney.
+    Copyright 2013-2014, 2017, 2020-2021, 2023-2025 Matt Kenney.
 
     Mwthr3 is free software: you can redistribute it and/or modify it under
     the terms of the GNU Affero General Public License as published by the Free
