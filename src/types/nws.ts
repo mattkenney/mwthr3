@@ -69,6 +69,7 @@ export interface WxAlert {
     event: string;
     headline: string;
     description: string;
+    instruction?: string;
   };
 }
 

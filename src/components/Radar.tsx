@@ -1,26 +1,23 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { MapContainer, TileLayer, WMSTileLayer, useMap } from 'react-leaflet';
-import { WMSParams } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import LinearProgress from '@mui/material/LinearProgress';
 
-import { SetBooleanFn, RadarSpinner } from './RadarSpinner';
+import {
+  RadarContext,
+  baseProps,
+  initialRadarContext,
+  useRadarIsLoading,
+  useRadarLayerProps,
+  useRadarProgress,
+} from '../hooks/radar';
+import { RadarPlayButton } from './RadarPlayButton';
+import { Spinner } from './Spinner';
 
-interface Config {
-  base: {
-    url: string;
-    attribution: string;
-  };
-  radar: {
-    url: string;
-    params: WMSParams;
-  };
+export interface RadarProps {
+  latitude?: number;
+  longitude?: number;
 }
-
-const dataElement = document.getElementById('data');
-const { base, radar } = JSON.parse(dataElement?.innerText ?? '{}') as Config;
-
-// two minute cache interval
-const interval = () => Math.round(Date.now() / (2 * 60 * 1000));
 
 function Panner({ latitude, longitude }: RadarProps) {
   const map = useMap();
@@ -35,55 +32,58 @@ function Panner({ latitude, longitude }: RadarProps) {
   return null;
 }
 
-interface RadarProps {
-  latitude?: number;
-  longitude?: number;
+function RadarLayer() {
+  const props = useRadarLayerProps();
+
+  return <WMSTileLayer {...props} />;
+}
+
+function RadarProgress() {
+  const progress = useRadarProgress();
+
+  return <LinearProgress variant="determinate" value={progress} />;
+}
+
+interface RadarProviderProps {
+  children?: ReactNode;
+}
+
+function RadarProvider({ children }: RadarProviderProps) {
+  return (
+    <RadarContext.Provider value={initialRadarContext()}>
+      {children}
+    </RadarContext.Provider>
+  );
+}
+
+function RadarSpinner() {
+  const isLoading = useRadarIsLoading();
+
+  if (!isLoading) return null;
+
+  return <Spinner />;
 }
 
 export default Radar;
 export function Radar({ latitude, longitude }: RadarProps) {
-  const spinnerRef = useRef<SetBooleanFn>();
-  const [timestamp, setTimestamp] = useState(interval());
-
-  const handler = useCallback(() => {
-    if (document.visibilityState === 'visible') {
-      setTimestamp(interval());
-      spinnerRef.current && spinnerRef.current(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('focus', handler, false);
-    window.addEventListener('visibilitychange', handler, false);
-    return () => {
-      window.removeEventListener('focus', handler);
-      window.removeEventListener('visibilitychange', handler);
-    };
-  }, [handler]);
-
   if (!latitude || !longitude) return null;
 
   const height = 'max(400px, min(60vh, 1152px))';
-  const params = { ...radar.params, _: timestamp } as WMSParams;
   return (
-    <MapContainer
-      center={[latitude, longitude]}
-      zoom={8}
-      scrollWheelZoom={false}
-      style={{ height }}
-    >
-      <Panner latitude={latitude} longitude={longitude} />
-      <TileLayer attribution={base.attribution} url={base.url} />
-      <WMSTileLayer
-        eventHandlers={{
-          load: () => spinnerRef.current && spinnerRef.current(false),
-          loading: () => spinnerRef.current && spinnerRef.current(true),
-        }}
-        opacity={0.7}
-        params={params}
-        url={radar.url}
-      />
-      <RadarSpinner spinnerRef={spinnerRef} />
-    </MapContainer>
+    <RadarProvider>
+      <MapContainer
+        center={[latitude, longitude]}
+        zoom={8}
+        scrollWheelZoom={false}
+        style={{ height }}
+      >
+        <Panner latitude={latitude} longitude={longitude} />
+        <TileLayer {...baseProps} />
+        <RadarLayer />
+        <RadarSpinner />
+        <RadarPlayButton />
+      </MapContainer>
+      <RadarProgress />
+    </RadarProvider>
   );
 }

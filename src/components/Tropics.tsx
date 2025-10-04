@@ -8,19 +8,11 @@ import {
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useResizeDetector } from 'react-resize-detector';
+import LinearProgress from '@mui/material/LinearProgress';
 
+import { baseProps } from '../hooks/radar';
 import { useTropics } from '../hooks/useTropics';
 import { CycloneLayer } from './CycloneLayer';
-
-interface Config {
-  base: {
-    url: string;
-    attribution: string;
-  };
-}
-
-const dataElement = document.getElementById('data');
-const { base } = JSON.parse(dataElement?.innerText ?? '{}') as Config;
 
 const getCenter = (width: number, pacific?: boolean): [number, number] => {
   const longitude = -Math.max(50, Math.min(70, 95 - width * 0.05));
@@ -63,25 +55,28 @@ export function Tropics({ pacific }: TropicsProps) {
   return (
     <div ref={ref}>
       {center && tropics.data && (
-        <MapContainer
-          center={center}
-          zoom={4}
-          scrollWheelZoom={false}
-          style={{ height }}
-        >
-          <Panner pacific={pacific} width={width} />
-          <TileLayer attribution={base.attribution} url={base.url} />
-          {showNoActivity && (
-            <Marker opacity={0} position={center}>
-              <Tooltip direction="center" permanent={true}>
-                {pacific
-                  ? 'No active tropical cyclones in the Eastern Pacific'
-                  : 'No active tropical cyclones in the Atlantic'}
-              </Tooltip>
-            </Marker>
-          )}
-          <CycloneLayer data={tropics.data} />
-        </MapContainer>
+        <>
+          <MapContainer
+            center={center}
+            zoom={4}
+            scrollWheelZoom={false}
+            style={{ height }}
+          >
+            <Panner pacific={pacific} width={width} />
+            <TileLayer {...baseProps} />
+            {showNoActivity && (
+              <Marker opacity={0} position={center}>
+                <Tooltip direction="center" permanent={true}>
+                  {pacific
+                    ? 'No active tropical cyclones in the Eastern Pacific'
+                    : 'No active tropical cyclones in the Atlantic'}
+                </Tooltip>
+              </Marker>
+            )}
+            <CycloneLayer data={tropics.data} />
+          </MapContainer>
+          <LinearProgress variant="determinate" value={0} />
+        </>
       )}
     </div>
   );

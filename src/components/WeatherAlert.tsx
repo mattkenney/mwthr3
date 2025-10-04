@@ -64,6 +64,12 @@ export function WeatherAlert({ data, onClose, title }: WeatherAlertProps) {
               <Box sx={{ paddingBottom: '3ex' }}>
                 {rewrap(feature?.properties?.description)}
               </Box>
+              {feature?.properties?.instruction && (
+                <Box sx={{ paddingBottom: '3ex' }}>
+                  <hr />
+                  {rewrap(feature?.properties?.instruction)}
+                </Box>
+              )}
             </Box>
           ))}
         </DialogContentText>
