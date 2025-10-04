@@ -92,7 +92,8 @@ export function useRadarLayerProps() {
   return {
     eventHandlers: {
       load: () => ctx.setIsLoading && ctx.setIsLoading(false),
-      loading: () => ctx.setIsLoading && ctx.setIsLoading(true),
+      loading: () =>
+        !ctx.isPlaying && ctx.setIsLoading && ctx.setIsLoading(true),
     },
     opacity: 0.7,
     params: { ...radar.params, time: time(ctx) } as WMSParams,

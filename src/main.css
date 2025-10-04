@@ -2,6 +2,10 @@ html {
   background-color: #eee;
 }
 
+.MuiLinearProgress-bar {
+  transition: none;
+}
+
 .cyclone.leaflet-tooltip {
   background-color: transparent;
   border: none;

@@ -73,9 +73,10 @@ export function Radar({ latitude, longitude }: RadarProps) {
     <RadarProvider>
       <MapContainer
         center={[latitude, longitude]}
-        zoom={8}
+        fadeAnimation={false}
         scrollWheelZoom={false}
         style={{ height }}
+        zoom={8}
       >
         <Panner latitude={latitude} longitude={longitude} />
         <TileLayer {...baseProps} />
