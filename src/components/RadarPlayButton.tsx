@@ -4,18 +4,6 @@ import Button from '@mui/material/Button';
 
 import { useRadarPlaying } from '../hooks/radar';
 
-/*
-// round down to last even minute
-const twoMinMillis = 2 * 60 *1000;
-const roundNow = () => Math.floor(Date.now() / twoMinMillis);
-
-function time(timestamp: number, progress: number) {
-  const r = new Date((timestamp - ((26 - progress/4)%26)) * twoMinMillis).toISOString();
-  console.log(r, timestamp, progress);
-  return r;
-}
-*/
-
 export function RadarPlayButton() {
   const { isPlaying, togglePlaying } = useRadarPlaying();
 
