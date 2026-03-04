@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { MapContainer, TileLayer, WMSTileLayer, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import LinearProgress from '@mui/material/LinearProgress';
 
@@ -8,7 +8,7 @@ import {
   baseProps,
   initialRadarContext,
   useRadarIsLoading,
-  useRadarLayerProps,
+  useRadarLayer,
   useRadarProgress,
 } from '../hooks/radar';
 import { RadarPlayButton } from './RadarPlayButton';
@@ -33,9 +33,8 @@ function Panner({ latitude, longitude }: RadarProps) {
 }
 
 function RadarLayer() {
-  const props = useRadarLayerProps();
-
-  return <WMSTileLayer {...props} />;
+  useRadarLayer();
+  return null;
 }
 
 function RadarProgress() {
