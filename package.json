@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc && vite build && ./head-insert.sh",
+    "deploy": "./scripts/deploy.sh",
+    "deploy:tropics": "./scripts/deploy-tropics.sh",
     "ci-format": "prettier --check .",
     "ci-lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "dev": "vite",
