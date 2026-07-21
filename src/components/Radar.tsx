@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import LinearProgress from '@mui/material/LinearProgress';
 
@@ -76,8 +76,10 @@ export function Radar({ latitude, longitude }: RadarProps) {
         scrollWheelZoom={false}
         style={{ height }}
         zoom={8}
+        zoomControl={false}
       >
         <Panner latitude={latitude} longitude={longitude} />
+        <ZoomControl position="topright" />
         <TileLayer {...baseProps} />
         <RadarLayer />
         <RadarSpinner />
